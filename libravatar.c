@@ -28,15 +28,26 @@
 #include <kcgi.h>
 #include <kcgihtml.h>
 
+#include "pathnames.h"
+
 enum page {
 	PAGE_INDEX,
 	PAGE_AVATAR,
 	PAGE__MAX
 };
 
+enum defaultstyle {
+	DEFAULT_URL,
+	DEFAULT_404,
+	DEFAULT_MM,
+	DEFAULT_BLANK,
+	DEFAULT__MAX
+};
+
 struct avatar {
-	int		 d;	/* default flag */
-	size_t		 s;	/* file size in pixel */
+	int		 d;	/* default */
+	int		 f;	/* forcedefault */
+	size_t		 s;	/* size */
 	char		*hash;
 };
 
@@ -67,7 +78,7 @@ page_index(struct kreq *r)
 	khtml_elem(&h, KELEM_PRE);
 	khtml_puts(&h, "http://");
 	khtml_puts(&h, r->host);
-	khtml_puts(&h, "/avatar/hash?s=size;d=retro");
+	khtml_puts(&h, "/avatar/hash?s=size;d=default;f=y;r=g");
 	khtml_closeelem(&h, 1);
 	khtml_elem(&h, KELEM_UL);
 	khtml_elem(&h, KELEM_LI);
@@ -77,7 +88,23 @@ page_index(struct kreq *r)
 	khtml_puts(&h, "s/size: The file size in pixels, must be between 1 and 512. The default value is 80.\n");
 	khtml_closeelem(&h, 1);
 	khtml_elem(&h, KELEM_LI);
-	khtml_puts(&h, "d/default: Default replacement for missing images. Only accepts 'retro'. Optionnal.\n");
+	khtml_puts(&h, "d/default: Default replacement for missing images. Can be an URL or the following values:\n");
+	khtml_elem(&h, KELEM_UL);
+	khtml_elem(&h, KELEM_LI);
+	khtml_puts(&h, "404: Do not load any image and return an HTTP 404 response.\n");
+	khtml_closeelem(&h, 1);
+	khtml_elem(&h, KELEM_LI);
+	khtml_puts(&h, "mm: Load a simple and static shadow silhouette.\n");
+	khtml_closeelem(&h, 1);
+	khtml_elem(&h, KELEM_LI);
+	khtml_puts(&h, "blank: Load a transparent PNG image.\n");
+	khtml_closeelem(&h, 2);
+	khtml_elem(&h, KELEM_LI);
+	khtml_puts(&h, "r/rating: Kept for compatibility with Gravatar but ignored.\n");
+	khtml_closeelem(&h, 1);
+	khtml_elem(&h, KELEM_LI);
+	khtml_puts(&h, "f/forcedefault: Force the default image even if the hash has a match.\n");
+
 	khtml_close(&h);
 }
 
@@ -86,31 +113,51 @@ page_avatar(struct kreq *r)
 {
 	int		 fd;
 	size_t		 linez;
+	enum kmime	 mime;
 	char		 filename[100];
 	char		 line[1500];
 	struct avatar	*avatar;
 
 	avatar = ((struct avatar *)r->arg);
-	snprintf(filename, sizeof(filename), "/htdocs/avatars/%s.jpeg",
-	    avatar->hash);
-	if (-1 == (fd = open(filename, O_RDONLY))) {
-		if (avatar->d == 0) {
+	if (0 == avatar->f) {
+		snprintf(filename, sizeof(filename), "/htdocs/avatars/%s.jpeg",
+		    avatar->hash);
+		mime = KMIME_IMAGE_JPEG;
+		fd = open(filename, O_RDONLY);
+	}
+	if (1 == avatar->f || -1 == fd) {
+		switch (avatar->d) {
+		case DEFAULT_404:
 			http_start(r, KHTTP_404);
 			return;
-		} else {
-			/* To be implemented */
-			http_start(r, KHTTP_404);
+		case DEFAULT_BLANK:
+			if (-1 == (fd = open(_PATH_BLANK, O_RDONLY))) {
+				http_start(r, KHTTP_500);
+				return;
+			}
+			mime = KMIME_IMAGE_PNG;
+			break;
+		case DEFAULT_MM:
+			if (-1 == (fd = open(_PATH_MM, O_RDONLY))) {
+				http_start(r, KHTTP_500);
+				return;
+			}
+			mime = KMIME_IMAGE_JPEG;
+			break;
+		default:
+			/* XXX: serve a default image */
+			http_start(r, KHTTP_500);
 			return;
 		}
 	}
 	khttp_head(r, kresps[KRESP_STATUS],
 	    "%s", khttps[KHTTP_200]);
 	khttp_head(r, kresps[KRESP_CONTENT_TYPE],
-	    "%s", kmimetypes[KMIME_IMAGE_JPEG]);
+	    "%s", kmimetypes[mime]);
 	khttp_head(r, kresps[KRESP_ACCESS_CONTROL_ALLOW_ORIGIN], "*");
 	khttp_head(r, kresps[KRESP_CACHE_CONTROL], "max-age=300");
 	khttp_body(r);
-	while ((linez = read(fd, line, 1000)) > 0) {
+	while ((linez = read(fd, line, sizeof(line))) > 0) {
 		khttp_write(r, line, linez);
 	}
 	close(fd);
@@ -134,11 +181,25 @@ sanitize(struct kreq *r)
 				return(KHTTP_404);
 		} else if (strcmp(r->fields[i].key, "d") == 0
 		    || strcmp(r->fields[i].key, "default") == 0) {
-			if (strcmp(r->fields[i].val, "retro") == 0) {
-				avatar->d = 1;
+			if (strcmp(r->fields[i].val, "404") == 0) {
+				avatar->d = DEFAULT_404;
+			} else if (strcmp(r->fields[i].val, "mm") == 0) {
+				avatar->d = DEFAULT_MM;
+			} else if (strcmp(r->fields[i].val, "blank") == 0) {
+				avatar->d = DEFAULT_BLANK;
+			} else if (strcmp(r->fields[i].val, "404") == 0) {
+				avatar->d = DEFAULT_404;
 			} else {
-				return(KHTTP_404);
+				/* XXX: check for http/https URL */
+				avatar->d = DEFAULT__MAX;
 			}
+		} else if (strcmp(r->fields[i].key, "f") == 0
+		    || strcmp(r->fields[i].key, "forcedefault") == 0) {
+			if (strcmp(r->fields[i].val, "y") == 0)
+				avatar->f = 1;
+		} else if (strcmp(r->fields[i].key, "r") == 0
+		    || strcmp(r->fields[i].key, "rating") == 0) {
+			continue;
 		} else {
 			return(KHTTP_404);
 		}
@@ -154,8 +215,9 @@ main(void)
 	const char *pages[PAGE__MAX] = {"index", "avatar"};
 	struct avatar avatar;
 
-	avatar.s = 80;
 	avatar.d = 0;
+	avatar.f = 0;
+	avatar.s = 80;
 	avatar.hash = NULL;
 
 	err = khttp_parsex(&r, ksuffixmap, kmimetypes, KMIME__MAX, NULL, 0,
