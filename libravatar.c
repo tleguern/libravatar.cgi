@@ -34,13 +34,7 @@ enum page {
 	PAGE__MAX
 };
 
-enum filetype {
-	FILETYPE_SVG,
-	FILETYPE__MAX
-};
-
 struct avatar {
-	enum filetype	 t;	/* file type*/
 	int		 d;	/* default flag */
 	size_t		 s;	/* file size in pixel */
 	char		*hash;
@@ -73,7 +67,7 @@ page_index(struct kreq *r)
 	khtml_elem(&h, KELEM_PRE);
 	khtml_puts(&h, "http://");
 	khtml_puts(&h, r->host);
-	khtml_puts(&h, "/avatar/hash?s=size;d=retro;t=type");
+	khtml_puts(&h, "/avatar/hash?s=size;d=retro");
 	khtml_closeelem(&h, 1);
 	khtml_elem(&h, KELEM_UL);
 	khtml_elem(&h, KELEM_LI);
@@ -84,9 +78,6 @@ page_index(struct kreq *r)
 	khtml_closeelem(&h, 1);
 	khtml_elem(&h, KELEM_LI);
 	khtml_puts(&h, "d/default: Default replacement for missing images. Only accepts 'retro'. Optionnal.\n");
-	khtml_closeelem(&h, 1);
-	khtml_elem(&h, KELEM_LI);
-	khtml_puts(&h, "t/type: The file type for the default replacement image.\n");
 	khtml_close(&h);
 }
 
@@ -148,13 +139,6 @@ sanitize(struct kreq *r)
 			} else {
 				return(KHTTP_404);
 			}
-		} else if (strcmp(r->fields[i].key, "t") == 0
-		    || strcmp(r->fields[i].key, "type") == 0) {
-			if (strcmp(r->fields[i].val, "svg") == 0) {
-				avatar->t = FILETYPE_SVG;
-			} else {
-				return(KHTTP_404);
-			}
 		} else {
 			return(KHTTP_404);
 		}
@@ -171,7 +155,6 @@ main(void)
 	struct avatar avatar;
 
 	avatar.s = 80;
-	avatar.t = FILETYPE_SVG;
 	avatar.d = 0;
 	avatar.hash = NULL;
 
