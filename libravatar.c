@@ -49,6 +49,7 @@ struct avatar {
 	int		 f;	/* forcedefault */
 	size_t		 s;	/* size */
 	char		*hash;
+	char		*url;
 };
 
 static void
@@ -59,6 +60,43 @@ http_start(struct kreq *r, enum khttp http)
 	khttp_head(r, kresps[KRESP_CONTENT_TYPE],
 	    "%s", kmimetypes[r->mime]);
 	khttp_body(r);
+}
+
+static char *
+urldecode(const char *cp)
+{
+	char	*p;
+	char	 ch;
+	size_t	 nm, sz, cur;
+
+	if (NULL == cp)
+		return(NULL);
+
+	sz = strlen(cp);
+	nm = 0;
+	for (cur = 0; '\0' != (ch = cp[cur]); cur++)
+		if ('%' == ch)
+			nm += 1;
+	sz = sz - nm * 2;
+
+	if (NULL == (p = malloc(sz)))
+		return(NULL);
+	for (cur = 0; '\0' != (ch = *cp); cp++, cur++) {
+		if ('%' == ch) {
+			char buf[3];
+			buf[0] = *(cp + 1);
+			buf[1] = *(cp + 2);
+			buf[2] = '\0';
+			(void)snprintf(p + cur, 2, "%c",
+			    (int)strtol(buf, NULL, 16));
+			cp += 2;
+		} else if ('+' == ch) {
+			p[cur] = ' ';
+		} else {
+			p[cur] = ch;
+		}
+	}
+	return(p);
 }
 
 static void
@@ -144,6 +182,13 @@ page_avatar(struct kreq *r)
 			}
 			mime = KMIME_IMAGE_JPEG;
 			break;
+		case DEFAULT_URL:
+			khttp_head(r, kresps[KRESP_STATUS],
+			    "%s", khttps[KHTTP_307]);
+			khttp_head(r, kresps[KRESP_LOCATION],
+			    "%s", avatar->url);
+			khttp_body(r);
+			return;
 		default:
 			/* XXX: serve a default image */
 			http_start(r, KHTTP_500);
@@ -189,8 +234,12 @@ sanitize(struct kreq *r)
 				avatar->d = DEFAULT_BLANK;
 			} else if (strcmp(r->fields[i].val, "404") == 0) {
 				avatar->d = DEFAULT_404;
+			} else if (strncmp(r->fields[i].val, "http", 4) == 0) {
+				avatar->d = DEFAULT_URL;
+				if (NULL ==
+				    (avatar->url = urldecode(r->fields[i].val)))
+					avatar->d = DEFAULT__MAX;
 			} else {
-				/* XXX: check for http/https URL */
 				avatar->d = DEFAULT__MAX;
 			}
 		} else if (strcmp(r->fields[i].key, "f") == 0
@@ -248,6 +297,7 @@ main(void)
 		else
 			page_avatar(&r);
 	}
+	free(avatar.url);
 	khttp_free(&r);
 	return(EXIT_SUCCESS);
 }
