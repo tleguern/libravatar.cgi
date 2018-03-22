@@ -37,6 +37,7 @@ enum page {
 };
 
 enum defaultstyle {
+	DEFAULT_NONE,
 	DEFAULT_URL,
 	DEFAULT_404,
 	DEFAULT_MM,
@@ -190,9 +191,12 @@ page_avatar(struct kreq *r)
 			khttp_body(r);
 			return;
 		default:
-			/* XXX: serve a default image */
-			http_start(r, KHTTP_500);
-			return;
+			if (-1 == (fd = open(_PATH_DEFAULT, O_RDONLY))) {
+				http_start(r, KHTTP_500);
+				return;
+			}
+			mime = KMIME_IMAGE_JPEG;
+			break;
 		}
 	}
 	khttp_head(r, kresps[KRESP_STATUS],
@@ -264,7 +268,7 @@ main(void)
 	const char *pages[PAGE__MAX] = {"index", "avatar"};
 	struct avatar avatar;
 
-	avatar.d = 0;
+	avatar.d = DEFAULT_NONE;
 	avatar.f = 0;
 	avatar.s = 80;
 	avatar.hash = NULL;
