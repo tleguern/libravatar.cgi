@@ -29,7 +29,6 @@
 #include <kcgi.h>
 #include <kcgihtml.h>
 
-#include "pathnames.h"
 #include "libravatar.h"
 
 enum page {
