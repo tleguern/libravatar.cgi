@@ -150,34 +150,34 @@ page_index(struct kreq *r)
 static void
 page_avatar(struct kreq *r)
 {
-	int		 fd;
 	size_t		 linez;
 	enum kmime	 mime;
 	char		 filename[100];
 	char		 line[1500];
 	struct avatar	*avatar;
+	FILE		*s;
 
 	avatar = ((struct avatar *)r->arg);
 	if (0 == avatar->f) {
 		snprintf(filename, sizeof(filename), "/htdocs/avatars/%s.jpeg",
 		    avatar->hash);
 		mime = KMIME_IMAGE_JPEG;
-		fd = open(filename, O_RDONLY);
+		s = fopen(filename, "r");
 	}
-	if (1 == avatar->f || -1 == fd) {
+	if (1 == avatar->f || NULL == s) {
 		switch (avatar->d) {
 		case DEFAULT_404:
 			http_start(r, KHTTP_404);
 			return;
 		case DEFAULT_BLANK:
-			if (-1 == (fd = open(_PATH_BLANK, O_RDONLY))) {
+			if (NULL == (s = fopen(_PATH_BLANK, "r"))) {
 				http_start(r, KHTTP_500);
 				return;
 			}
 			mime = KMIME_IMAGE_PNG;
 			break;
 		case DEFAULT_MM:
-			if (-1 == (fd = open(_PATH_MM, O_RDONLY))) {
+			if (NULL == (s = fopen(_PATH_MM, "r"))) {
 				http_start(r, KHTTP_500);
 				return;
 			}
@@ -191,7 +191,7 @@ page_avatar(struct kreq *r)
 			khttp_body(r);
 			return;
 		default:
-			if (-1 == (fd = open(_PATH_DEFAULT, O_RDONLY))) {
+			if (NULL == (s = fopen(_PATH_DEFAULT, "r"))) {
 				http_start(r, KHTTP_500);
 				return;
 			}
@@ -206,10 +206,10 @@ page_avatar(struct kreq *r)
 	khttp_head(r, kresps[KRESP_ACCESS_CONTROL_ALLOW_ORIGIN], "*");
 	khttp_head(r, kresps[KRESP_CACHE_CONTROL], "max-age=300");
 	khttp_body(r);
-	while ((linez = read(fd, line, sizeof(line))) > 0) {
+	while ((linez = fread(line, 1, sizeof(line), s)) > 0) {
 		khttp_write(r, line, linez);
 	}
-	close(fd);
+	fclose(s);
 }
 
 static enum khttp
