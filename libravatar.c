@@ -153,7 +153,7 @@ page_avatar(struct kreq *r)
 	size_t		 linez;
 	enum kmime	 mime;
 	char		 filename[100];
-	char		 line[1500];
+	char		 line[4096];
 	struct avatar	*avatar;
 	FILE		*s;
 
