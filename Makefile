@@ -1,9 +1,9 @@
 PROG= libravatar
-SRCS= libravatar.c
+SRCS= libravatar.c resample.c jpegscale.c
 OBJS= ${SRCS:.c=.o}
 
 LDFLAGS+= -L /usr/local/lib
-LDADD+= -lkcgihtml -lkcgi -lz
+LDADD+= -lkcgihtml -lkcgi -ljpeg -lz -lm
 CFLAGS+= -I /usr/local/include
 CFLAGS+= -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes -Wwrite-strings
 

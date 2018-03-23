@@ -15,6 +15,7 @@
  */
 
 #include <sys/types.h>
+#include <sys/stat.h>
 
 #include <stdarg.h>
 #include <stddef.h>
@@ -29,6 +30,7 @@
 #include <kcgihtml.h>
 
 #include "pathnames.h"
+#include "libravatar.h"
 
 enum page {
 	PAGE_INDEX,
@@ -150,10 +152,10 @@ page_index(struct kreq *r)
 static void
 page_avatar(struct kreq *r)
 {
-	size_t		 linez;
+	size_t		 filez;
 	enum kmime	 mime;
 	char		 filename[100];
-	char		 line[4096];
+	unsigned char	*file;
 	struct avatar	*avatar;
 	FILE		*s;
 
@@ -199,6 +201,31 @@ page_avatar(struct kreq *r)
 			break;
 		}
 	}
+	file = NULL;
+	filez = 0;
+	if (80 != avatar->s && KMIME_IMAGE_JPEG == mime) {
+		if (0 == (filez = jpegscale(s, &file, avatar->s))) {
+			fclose(s);
+			http_start(r, KHTTP_500);
+			return;
+		}
+	} else {
+		size_t		readz;
+		struct stat	ss;
+
+		(void)fstat(fileno(s), &ss);
+		filez = ss.st_size;
+		if (NULL == (file = calloc(filez, 1))) {
+			fclose(s);
+			http_start(r, KHTTP_500);
+		}
+		readz = fread(file, 1, filez, s);
+		if (readz != filez) {
+			free(file);
+			fclose(s);
+			http_start(r, KHTTP_500);
+		}
+	}
 	khttp_head(r, kresps[KRESP_STATUS],
 	    "%s", khttps[KHTTP_200]);
 	khttp_head(r, kresps[KRESP_CONTENT_TYPE],
@@ -206,9 +233,8 @@ page_avatar(struct kreq *r)
 	khttp_head(r, kresps[KRESP_ACCESS_CONTROL_ALLOW_ORIGIN], "*");
 	khttp_head(r, kresps[KRESP_CACHE_CONTROL], "max-age=300");
 	khttp_body(r);
-	while ((linez = fread(line, 1, sizeof(line), s)) > 0) {
-		khttp_write(r, line, linez);
-	}
+	khttp_write(r, file, filez);
+	free(file);
 	fclose(s);
 }
 
