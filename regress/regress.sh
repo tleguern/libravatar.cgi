@@ -15,7 +15,7 @@ testcode() {
 
 	tmp=$(mktemp -t libravatar.XXXXXXXX)
 	curl -X "$verb" -i "http://localhost/cgi-bin/$path" 2>/dev/null\
-	    | grep -v -e Date -e Server > "$tmp"
+	    | grep -v -e Date: -e Server: > "$tmp"
 	code=$(head -n 1 "$tmp" | cut -d' ' -f 2)
 	if [ "$code" != "$desiredcode" ]; then
 		message="not ok $n - $title got HTTP $code but expected $desiredcode"
