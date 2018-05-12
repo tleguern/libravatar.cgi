@@ -158,7 +158,10 @@ page_avatar(struct kreq *r)
 	struct avatar	*avatar;
 	FILE		*s;
 
+	filez = 0;
+	file = NULL;
 	avatar = ((struct avatar *)r->arg);
+	s = NULL;
 	if (0 == avatar->f) {
 		snprintf(filename, sizeof(filename), "/htdocs/avatars/%s.jpeg",
 		    avatar->hash);
@@ -171,7 +174,7 @@ page_avatar(struct kreq *r)
 			http_start(r, KHTTP_404);
 			return;
 		case DEFAULT_BLANK:
-			if (NULL == (s = fopen(_PATH_BLANK, "r"))) {
+			if (-1 == pngblank(avatar->s, &file, &filez)) {
 				http_start(r, KHTTP_500);
 				return;
 			}
@@ -200,29 +203,29 @@ page_avatar(struct kreq *r)
 			break;
 		}
 	}
-	file = NULL;
-	filez = 0;
-	if (80 != avatar->s && KMIME_IMAGE_JPEG == mime) {
-		if (0 == (filez = jpegscale(s, &file, avatar->s))) {
-			fclose(s);
-			http_start(r, KHTTP_500);
-			return;
-		}
-	} else {
-		size_t		readz;
-		struct stat	ss;
+	if (KMIME_IMAGE_JPEG == mime) {
+		if (80 != avatar->s) {
+			if (0 == (filez = jpegscale(s, &file, avatar->s))) {
+				fclose(s);
+				http_start(r, KHTTP_500);
+				return;
+			}
+		} else {
+			size_t		readz;
+			struct stat	ss;
 
-		(void)fstat(fileno(s), &ss);
-		filez = ss.st_size;
-		if (NULL == (file = calloc(filez, 1))) {
-			fclose(s);
-			http_start(r, KHTTP_500);
-		}
-		readz = fread(file, 1, filez, s);
-		if (readz != filez) {
-			free(file);
-			fclose(s);
-			http_start(r, KHTTP_500);
+			(void)fstat(fileno(s), &ss);
+			filez = ss.st_size;
+			if (NULL == (file = calloc(filez, 1))) {
+				fclose(s);
+				http_start(r, KHTTP_500);
+			}
+			readz = fread(file, 1, filez, s);
+			if (readz != filez) {
+				free(file);
+				fclose(s);
+				http_start(r, KHTTP_500);
+			}
 		}
 	}
 	khttp_head(r, kresps[KRESP_STATUS],
@@ -234,7 +237,8 @@ page_avatar(struct kreq *r)
 	khttp_body(r);
 	khttp_write(r, file, filez);
 	free(file);
-	fclose(s);
+	if (NULL != s)
+		fclose(s);
 }
 
 static enum khttp

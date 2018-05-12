@@ -1,5 +1,5 @@
 PROG= libravatar
-SRCS= libravatar.c resample.c jpegscale.c
+SRCS= libravatar.c resample.c jpegscale.c pngblank.c
 OBJS= ${SRCS:.c=.o}
 
 LDFLAGS+= -L /usr/local/lib
