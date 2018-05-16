@@ -204,28 +204,10 @@ page_avatar(struct kreq *r)
 		}
 	}
 	if (KMIME_IMAGE_JPEG == mime) {
-		if (80 != avatar->s) {
-			if (0 == (filez = jpegscale(s, &file, avatar->s))) {
-				fclose(s);
-				http_start(r, KHTTP_500);
-				return;
-			}
-		} else {
-			size_t		readz;
-			struct stat	ss;
-
-			(void)fstat(fileno(s), &ss);
-			filez = ss.st_size;
-			if (NULL == (file = calloc(filez, 1))) {
-				fclose(s);
-				http_start(r, KHTTP_500);
-			}
-			readz = fread(file, 1, filez, s);
-			if (readz != filez) {
-				free(file);
-				fclose(s);
-				http_start(r, KHTTP_500);
-			}
+		if (0 == (filez = jpegscale(s, &file, avatar->s))) {
+			fclose(s);
+			http_start(r, KHTTP_500);
+			return;
 		}
 	}
 	khttp_head(r, kresps[KRESP_STATUS],
