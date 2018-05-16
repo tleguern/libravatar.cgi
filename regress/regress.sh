@@ -8,7 +8,7 @@ n=0
 testcode() {
 	verb="$1"; shift
 	path="$1"; shift
-	desiredcode="$1"; shift
+	desiredcode="$1"
 
 	title="$verb on $path"
 	n=$((n + 1))
@@ -25,8 +25,9 @@ testcode() {
 }
 
 testfile() {	
+	set -x
 	path="$1"; shift
-	desiredfile="$1"; shift
+	desiredfile="$1"
 
 	title="check for $desiredfile"
 	n=$((n + 1))
@@ -41,7 +42,7 @@ testfile() {
 }
 
 echo "TAP version 13"
-echo "1..17"
+echo "1..16"
 
 testcode OPTIONS libravatar 200
 testcode POST libravatar 405
@@ -58,6 +59,5 @@ testcode GET "libravatar/avatar/4751ed9aae86881d2b45dd0512c3e14a?d=404" 200
 testcode GET "libravatar/avatar/4751ed9aae86881d2b45dd0512c3e14a?d=404&f=y" 404
 testcode GET "libravatar/avatar/invalidinvalidinvalidinvalidinva?d=404" 404
 testcode GET "libravatar/avatar/invalidinvalidinvalidinvalidinva?d=http%3A%2F%2Flocalhost%2Favatars%2Fmm.jpeg" 307
-testfile "libravatar/avatar/invalidinvalidinvalidinvalidinva?d=mm" ../img/mm.jpeg
-testfile "libravatar/avatar/invalidinvalidinvalidinvalidinva?d=blank" ../img/blank.png
+testfile "libravatar/avatar/invalidinvalidinvalidinvalidinva?d=blank" blank.png
 
