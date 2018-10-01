@@ -282,11 +282,15 @@ main(void)
 	avatar.s = 80;
 	avatar.hash = NULL;
 
+	if (-1 == pledge("stdio proc rpath", NULL))
+		return 0;
 	err = khttp_parsex(&r, ksuffixmap, kmimetypes, KMIME__MAX, NULL, 0,
 	    pages, PAGE__MAX, KMIME_TEXT_HTML, PAGE_INDEX, &avatar,
 	    NULL, 0, NULL);
 	if (KCGI_OK != err)
 		return(EXIT_FAILURE);
+	if (-1 == pledge("stdio rpath", NULL))
+		return 0;
 
 	if (KMETHOD_OPTIONS == r.method) {
 		khttp_head(&r, kresps[KRESP_ALLOW], "OPTIONS GET");
