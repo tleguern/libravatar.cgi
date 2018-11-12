@@ -5,9 +5,11 @@ To use these tests the following programs are needed:
 * curl ;
 * sharness.
 
-An optionnal parameter can be supplied in order to check the avatar associated with a specific email address. It should be a PNG image, otherwise some tests will fail.
+Some tests require an aditionnal utility named [pnginfo](https://github.com/Aversiste/pnginfo) but as it is currently undocumented as well as untested on Linux the dependency is not mandatory.
+
+An optionnal parameter can be supplied in order to check the avatar associated with a specific email address. It should be a PNG image, otherwise pnginfo based tests will fail.
 
 Example:
 
     ./libravatar.org.t
-    ./libravatar.t bertrand@example.org
+    ./libravatar.org.t bertrand@example.org
