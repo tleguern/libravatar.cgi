@@ -1,9 +1,9 @@
 #ifndef LIBRAVATAR_H_
 #define LIBRAVATAR_H_
 
-#define _PATH_MM "/htdocs/avatars/mm.jpeg"
+#define _PATH_MM "/htdocs/avatars/mm.png"
 #define _PATH_BLANK "/htdocs/avatars/blank.png"
-#define _PATH_DEFAULT "/htdocs/avatars/default.jpeg"
+#define _PATH_DEFAULT "/htdocs/avatars/default.png"
 
 #define PNGBLANK_MAX_SIZE 255
 
@@ -34,8 +34,7 @@ struct IHDR {
 	int8_t		interlace;
 } __attribute__((packed));
 
-unsigned long jpegscale(FILE *, unsigned char **, uint32_t);
+size_t pngscale(FILE *, unsigned char **, uint32_t);
 int pngblank(size_t, uint8_t **, size_t *);
-
 
 #endif /* LIBRAVATAR_H_ */

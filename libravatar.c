@@ -151,21 +151,21 @@ page_index(struct kreq *r)
 static void
 page_avatar(struct kreq *r)
 {
-	size_t		 filez;
+	size_t		 dataz;
 	enum kmime	 mime;
 	char		 filename[100];
-	unsigned char	*file;
+	unsigned char	*data;
 	struct avatar	*avatar;
 	FILE		*s;
 
-	filez = 0;
-	file = NULL;
+	dataz = 0;
+	data = NULL;
 	avatar = ((struct avatar *)r->arg);
 	s = NULL;
 	if (0 == avatar->f) {
-		snprintf(filename, sizeof(filename), "/htdocs/avatars/%s.jpeg",
+		snprintf(filename, sizeof(filename), "/htdocs/avatars/%s.png",
 		    avatar->hash);
-		mime = KMIME_IMAGE_JPEG;
+		mime = KMIME_IMAGE_PNG;
 		s = fopen(filename, "r");
 	}
 	if (1 == avatar->f || NULL == s) {
@@ -174,7 +174,7 @@ page_avatar(struct kreq *r)
 			http_start(r, KHTTP_404);
 			return;
 		case DEFAULT_BLANK:
-			if (-1 == pngblank(avatar->s, &file, &filez)) {
+			if (-1 == pngblank(avatar->s, &data, &dataz)) {
 				http_start(r, KHTTP_500);
 				return;
 			}
@@ -185,7 +185,7 @@ page_avatar(struct kreq *r)
 				http_start(r, KHTTP_500);
 				return;
 			}
-			mime = KMIME_IMAGE_JPEG;
+			mime = KMIME_IMAGE_PNG;
 			break;
 		case DEFAULT_URL:
 			khttp_head(r, kresps[KRESP_STATUS],
@@ -199,12 +199,15 @@ page_avatar(struct kreq *r)
 				http_start(r, KHTTP_500);
 				return;
 			}
-			mime = KMIME_IMAGE_JPEG;
+			mime = KMIME_IMAGE_PNG;
 			break;
 		}
 	}
-	if (KMIME_IMAGE_JPEG == mime) {
-		if (0 == (filez = jpegscale(s, &file, avatar->s))) {
+	/*
+	 * pngblank() already returns an image with the requested size
+	 */
+	if (DEFAULT_BLANK != avatar->d) {
+		if (0 == (dataz = pngscale(s, &data, avatar->s))) {
 			fclose(s);
 			http_start(r, KHTTP_500);
 			return;
@@ -217,10 +220,11 @@ page_avatar(struct kreq *r)
 	khttp_head(r, kresps[KRESP_ACCESS_CONTROL_ALLOW_ORIGIN], "*");
 	khttp_head(r, kresps[KRESP_CACHE_CONTROL], "max-age=300");
 	khttp_body(r);
-	khttp_write(r, file, filez);
-	free(file);
-	if (NULL != s)
+	khttp_write(r, data, dataz);
+	free(data);
+	if (NULL != s) {
 		fclose(s);
+	}
 }
 
 static enum khttp
