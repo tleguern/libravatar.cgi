@@ -2,7 +2,6 @@
 #define LIBRAVATAR_H_
 
 #define _PATH_MM "/htdocs/avatars/mm.png"
-#define _PATH_BLANK "/htdocs/avatars/blank.png"
 #define _PATH_DEFAULT "/htdocs/avatars/default.png"
 
 #define PNGBLANK_MAX_SIZE 255
