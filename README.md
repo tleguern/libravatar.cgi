@@ -1,8 +1,19 @@
+## Libravatar.cgi
+
+Small Libravatar implementation in C.
+
+## Contents
+
+1. [Synopsis](#synopsis)
+2. [Install](#install)
+3. [Tests](#tests)
+4. [License](#license)
+
 ## Synopsis
 
 libravatar.cgi is an open source CGI written in C implementing the [Libravatar](https://www.libravatar.org/) protocol. Its goal is to be minimal, secure and [BCHS](https://learnbchs.org/).
 
-This implementation only serves existing avatars in the JPEG format located in `/var/www/htdocs/avatars` and does not provide any way to upload a file. This should be the responsability of a separated system.
+This implementation only serves existing avatars in the PNG format located in `/var/www/htdocs/avatars` and does not provide any way to upload a file. This should be the responsability of a separate system.
 
 To request an avatar the following steps should be done :
 
@@ -18,23 +29,32 @@ A few options are accepted as GET parameters :
 
 The current version is not portable and only runs on OpenBSD.
 
-## Installation
+## Install
 
-Begin by installing kcgi on your system and then configure httpd(1). An example and minimalistic configuration file is provided in the `config/` folder.
+#### Requires
+
+* C compiler ;
+* [kcgi](https://kristaps.bsd.lv/kcgi) ;
+* libpng
+
+#### Build
+
+Configure your http server of choice to receive this CGI. An example and minimalistic configuration file is provided in the `config/` folder for OpenBSD httpd(8).
 
 ```
-doas mkdir /var/www/htdocs/avatars/
-doas cp config/mm.jpeg /var/www/htdocs/avatars/
-make
-doas make install
+# mkdir /var/www/htdocs/avatars/
+# cp config/mm.png /var/www/htdocs/avatars/
+# cp config/default.png /var/www/htdocs/avatars/
+$ make
+# make install
 ```
 
-Also the code is not portable yet the Makefile is and should work with GNU make.
+Although the code is not portable yet the Makefile is and should work with GNU make.
 
 ## Tests
 
-Basic regression tests are provided in the `regress/` folder. They currently checks the correctnes of the returned HTTP status code. The script `regress.sh` emits [TAP](https://testanything.org/) output.
+Basic regression tests are provided in the `regress/` folder. They test this implementation and two others: the official Libravatar and ivatar.
 
 ## License
 
-All sources use the ISC license excepts `resample.{c,h}` and `jpegscale.c` which use the MIT license. This files are sourced from the [liboil](https://github.com/ender672/liboil) project.
+All sources use the ISC license excepts `resample.{c,h}`, `jpegscale.c` and `pngscale.c` which use the MIT license. This files are sourced from the [liboil](https://github.com/ender672/liboil) project.
