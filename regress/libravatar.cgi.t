@@ -5,9 +5,9 @@
 #
 _md5() {
 	if command -v md5 > /dev/null; then
-		md5 -qs $1
+		md5 -qs "$1"
 	else
-		echo -n $1 | md5sum | cut -d' ' -f1
+		echo -n "$1" | md5sum | cut -d' ' -f1
 	fi
 }
 if [ -z "$1" ]; then
@@ -15,7 +15,7 @@ if [ -z "$1" ]; then
 else
 	email="$1"; shift
 fi
-hash=$(_md5 $email)
+hash="$(_md5 $email)"
 baseurl=http://localhost/cgi-bin/libravatar
 . ./regress.sh
 
