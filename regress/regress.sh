@@ -8,7 +8,7 @@ testhttpcode() {
 	desiredcode="$1"
 	error=0
 
-	tmp=/tmp/libravatar.test.png
+	tmp=libravatar.test.png
 	curl -X "$verb" -i "$baseurl/$path" 2>/dev/null\
 	    | grep -v -e Date: -e Server: > "$tmp"
 	code=$(grep -a 'HTTP/1.1' "$tmp" | tail -n 1 | cut -d' ' -f 2)
@@ -24,7 +24,7 @@ testhttpcodewithredirect() {
 	desiredcode="$1"
 	error=0
 
-	tmp=/tmp/libravatar.test.png
+	tmp=libravatar.test.png
 	curl -L -X "$verb" -i "$baseurl/$path" 2>/dev/null\
 	    | grep -v -e Date: -e Server: > "$tmp"
 	code=$(grep -a HTTP "$tmp" | tail -n 1 | cut -d' ' -f 2)
@@ -45,7 +45,7 @@ testpngwidth() {
 downloadfile() {
 	path="$1"; shift
 
-	tmp=/tmp/libravatar.test.png
+	tmp=libravatar.test.png
 	curl -L -X "$verb" "$baseurl/$path" 2>/dev/null > "$tmp"
 }
 
