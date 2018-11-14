@@ -46,6 +46,6 @@ downloadfile() {
 	local path="$1"; shift
 	local tmp=libravatar.test.png
 
-	curl -sLS -X "$verb" "$baseurl/$path" 2>/dev/null > "$tmp"
+	curl -sLS "$baseurl/$path" 2>/dev/null > "$tmp"
 }
 
