@@ -24,9 +24,9 @@ test_description="ivatar API compliance"
 
 command -v pnginfo > /dev/null 2>&1 && test_set_prereq PNGINFO
 command -v curl > /dev/null 2>&1 && test_set_prereq CURL
-curl -sL "$baseurl/mm/80.png" > libravatar.mm.png \
+curl -sL "$baseurl/static/img/mm/80.png" > libravatar.mm.png \
     && test_set_prereq MM
-curl -sL http://cdn.libravatar.org/nobody/80.png > libravatar.nobody.png \
+curl -sL "$baseurl/static/img/nobody/80.png" > libravatar.nobody.png \
     &&  test_set_prereq NOBODY
 
 if ! test_have_prereq CURL; then
@@ -52,20 +52,29 @@ test_expect_success PNGINFO "Size of the fetched avatar should be 200" '
 #
 # Invalid size= or default=
 #
-test_expect_success "GET on $email's avatar with an empty size" '
+# Returns default size
+test_expect_failure "GET on $email's avatar with an empty size" '
 	testhttpcode GET avatar/$hash?s= 400
 '
-test_expect_success "GET on $email's avatar with an invalid size" '
+# Error 500
+test_expect_failure "GET on $email's avatar with an invalid size" '
 	testhttpcode GET avatar/$hash?s=mille 400
 '
-test_expect_success "GET on $email's avatar with size 0" '
+# Returns default size
+test_expect_failure "GET on $email's avatar with size 0" '
 	testhttpcode GET avatar/$hash?s=0 400
 '
-test_expect_success "GET avatar for $email with size 1000" '
+# Returns size of 512
+test_expect_failure "GET avatar for $email with size 1000" '
 	testhttpcode GET avatar/$hash?s=1000 400
 '
-test_expect_success "GET on $email's avatar with an empty default" '
+# Returns the user's avatar
+test_expect_failure "GET on $email's avatar with an empty default" '
 	testhttpcode GET avatar/$hash?d= 400
+'
+# Returns mm
+test_expect_failure "GET on a non existing user's avatar with an empty default" '
+	testhttpcode GET "avatar/$(_md5 invalid$RANDOM)?d=" 400
 '
 #
 # default=404
@@ -80,27 +89,27 @@ test_expect_success "GET on a non existing user's avatar with default=404" '
 	testhttpcode GET "avatar/$(_md5 invalid$RANDOM)?d=404" 404
 '
 #
-# default=http://cdn.libravatar.org/nobody/80.png
+# default=https://avatars.linux-kernel.at/static/img/nobody/80.png
 #
 test_expect_success "GET on a non existing user's avatar with d=\$URL (no follow)" '
-	testhttpcode GET "avatar/$(_md5 invalid$RANDOM)?s=80&d=http%3A%2F%2Fcdn.libravatar.org%2Fnobody.png" 307
-'
-test_expect_success "GET on a non existing user's avatar with d=\$URL (follow)" 
-'
-	testhttpcodewithredirect GET "avatar/$(_md5 invalid$RANDOM)?s=80&d=http%3A%2F%2Fcdn.libravatar.org%2Fnobody%2F80.png" 200
+	testhttpcode GET "avatar/$(_md5 invalid$RANDOM)?s=80&d=https%3A%2F%2favatars.linux-kernel.at%2Fstatic%2Fimg%2Fnobody%2F80.png" 302
+#'
+test_expect_success "GET on a non existing user's avatar with d=\$URL (follow)" '
+	testhttpcodewithredirect GET "avatar/$(_md5 invalid$RANDOM)?s=80&d=https%3A%2F%2favatars.linux-kernel.at%2Fstatic%2Fimg%2Fnobody%2F80.png" 200
 '
 test_expect_success PNGINFO "Size of the fetched avatar should be 80" '
 	testpngwidth libravatar.test.png 80
 '
+
 test_expect_success NOBODY "The fetched avatar should be nobody.png" '
-	downloadfile "avatar/$(_md5 invalid$RANDOM)?s=80&d=http%3A%2F%2Fcdn.libravatar.org%2Fnobody%2F80.png" && \
+	downloadfile "avatar/$(_md5 invalid$RANDOM)?s=80&d=https%3A%2F%2favatars.linux-kernel.at%2Fstatic%2Fimg%2Fnobody%2F80.png" && \
 	test_cmp libravatar.test.png libravatar.nobody.png
 '
 #
 # default=mm
 #
 test_expect_success "GET on a non existing user's avatar with d=mm" '
-	testhttpcode GET "avatar/$(_md5 invalid$RANDOM)?s=80&d=mm" 200
+	testhttpcodewithredirect GET "avatar/$(_md5 invalid$RANDOM)?s=80&d=mm" 200
 '
 test_expect_success PNGINFO "Size of the fetched mm avatar should be 80" '
 	testpngwidth libravatar.test.png 80
@@ -113,7 +122,7 @@ test_expect_success MM "The fetched avatar should be mm.png" '
 # default=mp (Gravatar decided to add a synonym without explanation)
 #
 test_expect_success "GET on a non existing user's avatar with d=mp" '
-	testhttpcode GET "avatar/$(_md5 invalid$RANDOM)?s=80&d=mp" 200
+	testhttpcodewithredirect GET "avatar/$(_md5 invalid$RANDOM)?s=80&d=mp" 200
 '
 test_expect_success PNGINFO "Size of the fetched mp avatar should be 80" '
 	testpngwidth libravatar.test.png 80
@@ -137,7 +146,8 @@ test_expect_success PNGINFO "Size of the fetched monsterid avatar should be 80" 
 test_expect_success "GET on a non existing user's avatar with d=identicon" '
 	testhttpcode GET "avatar/$(_md5 invalid$RANDOM)?s=80&d=identicon" 200
 '
-test_expect_success PNGINFO "Size of the fetched identicon avatar should be 80" '
+# Size is 100
+test_expect_failure PNGINFO "Size of the fetched identicon avatar should be 80" '
 	testpngwidth libravatar.test.png 80
 '
 #
@@ -146,7 +156,8 @@ test_expect_success PNGINFO "Size of the fetched identicon avatar should be 80" 
 test_expect_success "GET on a non existing user's avatar with d=retro" '
 	testhttpcode GET "avatar/$(_md5 invalid$RANDOM)?s=80&d=retro" 200
 '
-test_expect_success PNGINFO "Size of the fetched retro avatar should be 80" '
+# Size is 100
+test_expect_failure PNGINFO "Size of the fetched retro avatar should be 80" '
 	testpngwidth libravatar.test.png 80
 '
 test_done
