@@ -51,20 +51,29 @@ test_expect_success PNGINFO "Size of the fetched avatar should be 200" '
 #
 # Invalid size= or default=
 #
+# Returns default size
 test_expect_failure "GET on $email's avatar with an empty size" '
 	testhttpcode GET avatar/$hash?s= 400
 '
+# Returns default size
 test_expect_failure "GET on $email's avatar with an invalid size" '
 	testhttpcode GET avatar/$hash?s=mille 400
 '
-test_expect_success "GET on $email's avatar with size 0" '
+# Returns size of 1
+test_expect_failure "GET on $email's avatar with size 0" '
 	testhttpcode GET avatar/$hash?s=0 400
 '
-test_expect_success "GET avatar for $email with size 1000" '
+# Returns size of 1000
+test_expect_failure "GET avatar for $email with size 1000" '
 	testhttpcode GET avatar/$hash?s=1000 400
 '
-test_expect_failure "GET on $email's avatar with an empty default" '
+#  Returns the user's avatar
+test_expect_success "GET on $email's avatar with an empty default" '
 	testhttpcode GET avatar/$hash?d= 400
+'
+# Redirects to Gravatar which returns nobody.png
+test_expect_failure "GET on a non existing user's avatar with an empty default" '
+	testhttpcode GET "avatar/$(_md5 invalid$RANDOM)?d=" 307
 '
 #
 # default=404
