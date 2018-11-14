@@ -32,85 +32,85 @@ fi
 #
 # Test outside of API conformance
 #
-test_expect_success "OPTIONS on /" "
+test_expect_success "OPTIONS on /" '
 	testhttpcode OPTIONS / 200
-"
-test_expect_success "POST on /" "
+'
+test_expect_success "POST on /" '
 	testhttpcode POST / 405
-"
-test_expect_success "GET on index" "
+'
+test_expect_success "GET on index" '
 	testhttpcode GET index 200
-"
-test_expect_success "GET on invalid path" "
+'
+test_expect_success "GET on invalid path" '
 	testhttpcode GET invalidpath 404
-"
-test_expect_success "GET on /avatar" "
+'
+test_expect_success "GET on /avatar" '
 	testhttpcode GET avatar 400
-"
+'
 #
 # Normal cases
 #
-test_expect_success "GET on $email's avatar" "
+test_expect_success "GET on $email's avatar" '
 	testhttpcode GET avatar/$hash 200
-"
-test_expect_success "GET on $email's avatar with a size of 200" "
+'
+test_expect_success "GET on $email's avatar with a size of 200" '
 	testhttpcode GET avatar/$hash?s=200 200
-"
+'
 #
 # Invalid size= or default=
 #
-test_expect_success "GET on $email's avatar with an empty size" "
+test_expect_success "GET on $email's avatar with an empty size" '
 	testhttpcode GET avatar/$hash?s= 400
-"
-test_expect_success "GET on $email's avatar with an invalid size" "
+'
+test_expect_success "GET on $email's avatar with an invalid size" '
 	testhttpcode GET avatar/$hash?s=mille 400
-"
-test_expect_success "GET on $email's avatar with size 0" "
+'
+test_expect_success "GET on $email's avatar with size 0" '
 	testhttpcode GET avatar/$hash?s=0 400
-"
-test_expect_success "GET avatar for $email with size 1000" "
+'
+test_expect_success "GET avatar for $email with size 1000" '
 	testhttpcode GET avatar/$hash?s=1000 400
-"
-test_expect_success "GET on $email's avatar with an empty default" "
+'
+test_expect_success "GET on $email's avatar with an empty default" '
 	testhttpcode GET avatar/$hash?d= 400
-"
+'
 #
 # default=404
 #
-test_expect_success "GET on $email's avatar with default=404" "
+test_expect_success "GET on $email's avatar with default=404" '
 	testhttpcode GET avatar/$hash?d=404 200
-"
-test_expect_success "GET on $email's avatar with default=404 and forcedefault=y" "
-	testhttpcode GET 'avatar/$hash?d=404&f=y' 404
-"
-test_expect_success "GET on a non existing user's avatar with default=404" "
-	testhttpcode GET avatar/'$(_md5 invalid$RANDOM)'?d=404 404
-"
+'
+test_expect_success "GET on $email's avatar with default=404 and forcedefault=y" '
+	testhttpcode GET "avatar/$hash?d=404&f=y" 404
+'
+test_expect_success "GET on a non existing user's avatar with default=404" '
+	testhttpcode GET "avatar/$(_md5 invalid$RANDOM)?d=404" 404
+'
 #
 # default=http://cdn.libravatar.org/nobody/80.png
 #
-test_expect_success "GET on a non existing user's avatar with d=\$URL (no follow)" "
-	testhttpcode GET 'avatar/'$(_md5 invalid$RANDOM)'?s=80&d=http%3A%2F%2Fcdn.libravatar.org%2Fnobody.png' 307
-"
-test_expect_success "GET on a non existing user's avatar with d=\$URL (follow)" "
-	testhttpcodewithredirect GET 'avatar/'$(_md5 invalid$RANDOM)'?s=80&d=http%3A%2F%2Fcdn.libravatar.org%2Fnobody%2F80.png' 200
-"
-test_expect_success PNGINFO "Size of the fetched avatar should be 80" "
+test_expect_success "GET on a non existing user's avatar with d=\$URL (no follow)" '
+	testhttpcode GET "avatar/$(_md5 invalid$RANDOM)?s=80&d=http%3A%2F%2Fcdn.libravatar.org%2Fnobody.png" 307
+'
+test_expect_success "GET on a non existing user's avatar with d=\$URL (follow)" '
+	testhttpcodewithredirect GET "avatar/$(_md5 invalid$RANDOM)?s=80&d=http%3A%2F%2Fcdn.libravatar.org%2Fnobody%2F80.png" 200
+'
+test_expect_success PNGINFO "Size of the fetched avatar should be 80" '
 	testpngwidth libravatar.test.png 80
-"
+'
 #
 # default=mm
 #
-test_expect_success "GET on a non existing user's avatar with d=mm" "
-	testhttpcode GET 'avatar/'$(_md5 invalid$RANDOM)'?s=80&d=mm' 200
-"
+test_expect_success "GET on a non existing user's avatar with d=mm" '
+	testhttpcode GET "avatar/$(_md5 invalid$RANDOM)?s=80&d=mm" 200
+'
 #
 # default=blank
 #
-test_expect_success "GET on a non existing user's avatar with d=blank" "
-	testhttpcode GET 'avatar/'$(_md5 invalid$RANDOM)'?s=80&d=blank' 200
-"
-test_expect_success PNGINFO "Size of the fetched blank avatar should be 80" "
+test_expect_success "GET on a non existing user's avatar with d=blank" '
+	testhttpcode GET "avatar/$(_md5 invalid$RANDOM)?s=80&d=blank" 200
+'
+test_expect_success PNGINFO "Size of the fetched blank avatar should be 80" '
 	testpngwidth libravatar.test.png 80
-"
+'
 test_done
