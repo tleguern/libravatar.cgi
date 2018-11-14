@@ -27,11 +27,11 @@
 #include "libravatar.h"
 
 static size_t
-write_IHDR(char *buf, int width)
+write_IHDR(uint8_t *buf, size_t width)
 {
 	uint32_t	crc, length;
 	size_t		bufw;
-	char		type[4] = "IHDR";
+	uint8_t		type[4] = "IHDR";
 	struct IHDR	ihdr;
 
 	ihdr.width = htonl(width);
@@ -44,7 +44,7 @@ write_IHDR(char *buf, int width)
 	length = htonl(13);
 	crc = crc32(0, Z_NULL, 0);
 	crc = crc32(crc, type, sizeof(type));
-	crc = crc32(crc, (Bytef*)&ihdr, sizeof(ihdr));
+	crc = crc32(crc, (Bytef *)&ihdr, sizeof(ihdr));
 	crc = htonl(crc);
 	bufw = 0;
 	(void)memcpy(buf + bufw, &length, sizeof(length));
@@ -59,11 +59,11 @@ write_IHDR(char *buf, int width)
 }
 
 static size_t
-write_tRNS(char *buf)
+write_tRNS(uint8_t *buf)
 {
 	uint32_t	crc, length;
 	size_t		bufw;
-	char		type[4] = "tRNS";
+	uint8_t		type[4] = "tRNS";
 	uint8_t		trns[2];
 
 	(void)memset(trns, 0, sizeof(trns));
@@ -85,12 +85,12 @@ write_tRNS(char *buf)
 }
 
 static size_t
-write_IDAT(char *buf, int width)
+write_IDAT(uint8_t *buf, size_t width)
 {
 	size_t		 dataz, deflatez;
 	uint32_t	 crc, length;
 	size_t		 bufw;
-	char		 type[4] = "IDAT";
+	uint8_t		 type[4] = "IDAT";
 	uint8_t		*data, *deflate;
 
 	/* TODO: Directly write a compressed stream to avoid allocations */
@@ -129,12 +129,12 @@ write_IDAT(char *buf, int width)
 }
 
 static size_t
-write_IEND(char *buf)
+write_IEND(uint8_t *buf)
 {
 	int		length;
 	uint32_t	crc;
-	size_t		 bufw;
-	char		type[4] = "IEND";
+	size_t		bufw;
+	uint8_t		type[4] = "IEND";
 
 	length = 0;
 	crc = htonl(2923585666);
