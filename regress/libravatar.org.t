@@ -48,6 +48,11 @@ test_expect_success "GET on $email's avatar with a size of 200" '
 test_expect_success PNGINFO "Size of the fetched avatar should be 200" '
 	testpngwidth libravatar.test.png 200
 '
+# The two images are differents
+test_expect_failure NOBODY "GET on a non existing user's avatar" '
+	downloadfile "avatar/$(_md5 invalid$RANDOM)?d=" && \
+	test_cmp libravatar.test.png libravatar.nobody.png
+'
 #
 # Invalid size= or default=
 #
@@ -68,7 +73,7 @@ test_expect_failure "GET avatar for $email with size 1000" '
 	testhttpcode GET avatar/$hash?s=1000 400
 '
 #  Returns the user's avatar
-test_expect_success "GET on $email's avatar with an empty default" '
+test_expect_failure "GET on $email's avatar with an empty default" '
 	testhttpcode GET avatar/$hash?d= 400
 '
 # Redirects to Gravatar which returns nobody.png
