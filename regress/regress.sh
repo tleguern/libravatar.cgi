@@ -8,10 +8,11 @@ testhttpcode() {
 	local desiredcode="$1"
 	local error=0
 	local tmp=libravatar.test.png
+	local code=
 
 	curl -sS -X "$verb" -i "$baseurl/$path" 2>/dev/null\
 	    | grep -v -e Date: -e Server: > "$tmp"
-	local code=$(grep -a 'HTTP/1.1' "$tmp" | tail -n 1 | cut -d' ' -f 2)
+	code=$(grep -a 'HTTP/1.1' "$tmp" | tail -n 1 | cut -d' ' -f 2)
 	if [ "$code" != "$desiredcode" ]; then
 		error=1
 	fi
@@ -24,10 +25,11 @@ testhttpcodewithredirect() {
 	local desiredcode="$1"
 	local error=0
 	local tmp=libravatar.test.png
+	local code=
 
 	curl -sLS -X "$verb" -i "$baseurl/$path" 2>/dev/null\
 	    | grep -v -e Date: -e Server: > "$tmp"
-	local code=$(grep -a HTTP "$tmp" | tail -n 1 | cut -d' ' -f 2)
+	code=$(grep -a HTTP "$tmp" | tail -n 1 | cut -d' ' -f 2)
 	if [ "$code" != "$desiredcode" ]; then
 		error=1
 	fi
