@@ -286,13 +286,17 @@ main(void)
 	avatar.s = 80;
 	avatar.hash = NULL;
 
-	if (-1 == pledge("stdio proc rpath", NULL))
+	if (-1 == pledge("stdio proc rpath unveil", NULL))
 		return 0;
 	err = khttp_parsex(&r, ksuffixmap, kmimetypes, KMIME__MAX, NULL, 0,
 	    pages, PAGE__MAX, KMIME_TEXT_HTML, PAGE_INDEX, &avatar,
 	    NULL, 0, NULL);
 	if (KCGI_OK != err)
 		return(EXIT_FAILURE);
+	if (-1 == unveil("/htdocs/avatars/", "r"))
+		return 0;
+	if (-1 == unveil(NULL, NULL))
+		return 0;
 	if (-1 == pledge("stdio rpath", NULL))
 		return 0;
 
