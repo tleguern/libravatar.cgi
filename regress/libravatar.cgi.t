@@ -24,6 +24,8 @@ test_description="Libravatar.cgi API compliance"
 
 command -v pnginfo > /dev/null 2>&1 && test_set_prereq PNGINFO
 command -v curl > /dev/null 2>&1 && test_set_prereq CURL
+curl -sL "http://localhost/avatars/default.png" > libravatar.nobody.png \
+    &&  test_set_prereq NOBODY
 
 if ! test_have_prereq CURL; then
 	skip_all="skipping all tests as curl is not installed"
@@ -53,8 +55,19 @@ test_expect_success "GET on /avatar" '
 test_expect_success "GET on $email's avatar" '
 	testhttpcode GET avatar/$hash 200
 '
+test_expect_success PNGINFO "Size of the fetched avatar should be 80" '
+	testpngwidth libravatar.test.png 80
+'
 test_expect_success "GET on $email's avatar with a size of 200" '
 	testhttpcode GET avatar/$hash?s=200 200
+'
+test_expect_success PNGINFO "Size of the fetched avatar should be 200" '
+	testpngwidth libravatar.test.png 200
+'
+# pngscale() removes the PLTE chunk
+test_expect_failure NOBODY "GET on a non existing user's avatar" '
+	downloadfile "avatar/$(_md5 invalid$RANDOM)" && \
+	test_cmp libravatar.test.png libravatar.nobody.png
 '
 #
 # Invalid size= or default=
@@ -98,11 +111,18 @@ test_expect_success "GET on a non existing user's avatar with d=\$URL (follow)" 
 test_expect_success PNGINFO "Size of the fetched avatar should be 80" '
 	testpngwidth libravatar.test.png 80
 '
+test_expect_success NOBODY "The fetched avatar should be nobody.png" '
+	downloadfile "avatar/$(_md5 invalid$RANDOM)?s=80&d=http%3A%2F%2Flocalhost%2Favatars%2Fdefault.png" && \
+	test_cmp libravatar.test.png libravatar.nobody.png
+'
 #
 # default=mm
 #
 test_expect_success "GET on a non existing user's avatar with d=mm" '
 	testhttpcode GET "avatar/$(_md5 invalid$RANDOM)?s=80&d=mm" 200
+'
+test_expect_success PNGINFO "Size of the fetched mm avatar should be 80" '
+	testpngwidth libravatar.test.png 80
 '
 #
 # default=blank

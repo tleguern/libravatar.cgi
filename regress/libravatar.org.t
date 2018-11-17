@@ -50,7 +50,7 @@ test_expect_success PNGINFO "Size of the fetched avatar should be 200" '
 '
 # The two images are differents
 test_expect_failure NOBODY "GET on a non existing user's avatar" '
-	downloadfile "avatar/$(_md5 invalid$RANDOM)?d=" && \
+	downloadfile "avatar/$(_md5 invalid$RANDOM)" && \
 	test_cmp libravatar.test.png libravatar.nobody.png
 '
 #
@@ -131,11 +131,17 @@ test_expect_failure MM "The fetched avatar should be mm.png" '
 test_expect_success "GET on a non existing user's avatar with d=identicon" '
 	testhttpcodewithredirect GET "avatar/$(_md5 invalid$RANDOM)?s=80&d=identicon" 200
 '
+test_expect_success PNGINFO "Size of the fetched identicon avatar should be 80" '
+	testpngwidth libravatar.test.png 80
+'
 #
 # default=monsterid
 #
 test_expect_success "GET on a non existing user's avatar with d=monsterid" '
 	testhttpcodewithredirect GET "avatar/$(_md5 invalid$RANDOM)?s=80&d=monsterid" 200
+'
+test_expect_success PNGINFO "Size of the fetched monsterid avatar should be 80" '
+	testpngwidth libravatar.test.png 80
 '
 #
 # default=wavatar
@@ -143,10 +149,16 @@ test_expect_success "GET on a non existing user's avatar with d=monsterid" '
 test_expect_success "GET on a non existing user's avatar with d=wavatar" '
 	testhttpcodewithredirect GET "avatar/$(_md5 invalid$RANDOM)?s=80&d=wavatar" 200
 '
+test_expect_success PNGINFO "Size of the fetched wavatar avatar should be 80" '
+	testpngwidth libravatar.test.png 80
+'
 #
 # default=retro
 #
 test_expect_success "GET on a non existing user's avatar with d=retro" '
 	testhttpcodewithredirect GET "avatar/$(_md5 invalid$RANDOM)?s=80&d=retro" 200
+'
+test_expect_success PNGINFO "Size of the fetched retro avatar should be 80" '
+	testpngwidth libravatar.test.png 80
 '
 test_done
