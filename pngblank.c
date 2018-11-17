@@ -26,8 +26,19 @@
 
 #include "libravatar.h"
 
+#define PNGBLANK_MAX_SIZE 255
+
 static size_t
-write_IHDR(uint8_t *buf, size_t width)
+write_png_sig(uint8_t *buf)
+{
+	char	sig[8] = {137, 80, 78, 71, 13, 10, 26, 10};
+
+	(void)memcpy(buf, sig, sizeof(sig));
+	return(sizeof(sig));
+}
+
+static size_t
+write_IHDR(uint8_t *buf, size_t width, int bitdepth, enum colourtype colour)
 {
 	uint32_t	crc, length;
 	size_t		bufw;
@@ -36,8 +47,8 @@ write_IHDR(uint8_t *buf, size_t width)
 
 	ihdr.width = htonl(width);
 	ihdr.height = htonl(width);
-	ihdr.bitdepth = 1;
-	ihdr.colourtype = COLOUR_TYPE_GREYSCALE;
+	ihdr.bitdepth = bitdepth;
+	ihdr.colourtype = colour;
 	ihdr.compression = 0;
 	ihdr.filter = 0;
 	ihdr.interlace = INTERLACE_METHOD_STANDARD;
@@ -151,13 +162,11 @@ write_IEND(uint8_t *buf)
 int
 pngblank(size_t width, uint8_t **buf, size_t *bufz)
 {
-	char	 sig[8] = {137, 80, 78, 71, 13, 10, 26, 10};
-
 	if (NULL == ((*buf) = calloc(PNGBLANK_MAX_SIZE, 1)))
 		return(-1);
-	(void)memcpy(*buf, sig, sizeof(sig));
-	*bufz = sizeof(sig);
-	*bufz += write_IHDR(*buf + *bufz, width);
+	*bufz = 0;
+	*bufz += write_png_sig(*buf);
+	*bufz += write_IHDR(*buf + *bufz, width, 1, COLOUR_TYPE_GREYSCALE);
 	*bufz += write_tRNS(*buf + *bufz);
 	*bufz += write_IDAT(*buf + *bufz, width);
 	*bufz += write_IEND(*buf + *bufz);

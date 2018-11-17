@@ -4,15 +4,13 @@
 #define _PATH_MM "/htdocs/avatars/mm.png"
 #define _PATH_DEFAULT "/htdocs/avatars/default.png"
 
-#define PNGBLANK_MAX_SIZE 255
-
 enum interlace_method {
 	INTERLACE_METHOD_STANDARD,
 	INTERLACE_METHOD_ADAM7,
 	INTERLACE_METHOD__MAX,
 };
 
-enum colour_type {
+enum colourtype {
 	COLOUR_TYPE_GREYSCALE,
 	COLOUR_TYPE_FILLER1,
 	COLOUR_TYPE_TRUECOLOUR,
