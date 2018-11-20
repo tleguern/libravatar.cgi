@@ -247,6 +247,8 @@ sanitize(struct kreq *r)
 				avatar->d = DEFAULT_404;
 			} else if (strcmp(r->fields[i].val, "mm") == 0) {
 				avatar->d = DEFAULT_MM;
+			} else if (strcmp(r->fields[i].val, "mp") == 0) {
+				avatar->d = DEFAULT_MM;
 			} else if (strcmp(r->fields[i].val, "blank") == 0) {
 				avatar->d = DEFAULT_BLANK;
 			} else if (strncmp(r->fields[i].val, "http", 4) == 0) {

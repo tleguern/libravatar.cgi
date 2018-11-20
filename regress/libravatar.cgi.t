@@ -132,6 +132,19 @@ test_expect_success MM "The fetched avatar should be mm.png" '
 	test_cmp libravatar.test.png libravatar.mm.png
 '
 #
+# default=mp (Gravatar decided to add a synonym without explanation)
+#
+test_expect_success "GET on a non existing user's avatar with d=mp" '
+	testhttpcode GET "avatar/$(_md5 invalid$RANDOM)?s=80&d=mp" 200
+'
+test_expect_success PNGINFO "Size of the fetched mp avatar should be 80" '
+	testpngwidth libravatar.test.png 80
+'
+test_expect_success MM "The fetched mp avatar should be mm.png" '
+	downloadfile "avatar/$(_md5 invalid$RANDOM)?s=80&d=mp" && \
+	test_cmp libravatar.test.png libravatar.mm.png
+'
+#
 # default=blank
 #
 test_expect_success "GET on a non existing user's avatar with d=blank" '
