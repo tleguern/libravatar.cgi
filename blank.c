@@ -25,49 +25,9 @@
 #include <zlib.h>
 
 #include "libravatar.h"
+#include "lgpng.h"
 
 #define PNGBLANK_MAX_SIZE 255
-
-static size_t
-write_png_sig(uint8_t *buf)
-{
-	char	sig[8] = {137, 80, 78, 71, 13, 10, 26, 10};
-
-	(void)memcpy(buf, sig, sizeof(sig));
-	return(sizeof(sig));
-}
-
-static size_t
-write_IHDR(uint8_t *buf, size_t width, int bitdepth, enum colourtype colour)
-{
-	uint32_t	crc, length;
-	size_t		bufw;
-	uint8_t		type[4] = "IHDR";
-	struct IHDR	ihdr;
-
-	ihdr.width = htonl(width);
-	ihdr.height = htonl(width);
-	ihdr.bitdepth = bitdepth;
-	ihdr.colourtype = colour;
-	ihdr.compression = 0;
-	ihdr.filter = 0;
-	ihdr.interlace = INTERLACE_METHOD_STANDARD;
-	length = htonl(13);
-	crc = crc32(0, Z_NULL, 0);
-	crc = crc32(crc, type, sizeof(type));
-	crc = crc32(crc, (Bytef *)&ihdr, sizeof(ihdr));
-	crc = htonl(crc);
-	bufw = 0;
-	(void)memcpy(buf + bufw, &length, sizeof(length));
-	bufw += sizeof(length);
-	(void)memcpy(buf + bufw, type, sizeof(type));
-	bufw += sizeof(type);
-	(void)memcpy(buf + bufw, &ihdr, sizeof(ihdr));
-	bufw += sizeof(ihdr);
-	(void)memcpy(buf + bufw, &crc, sizeof(crc));
-	bufw += sizeof(crc);
-	return(bufw);
-}
 
 static size_t
 write_tRNS(uint8_t *buf)
@@ -136,26 +96,6 @@ write_IDAT(uint8_t *buf, size_t width)
 	(void)memcpy(buf + bufw, &crc, sizeof(crc));
 	bufw += sizeof(crc);
 	free(deflate);
-	return(bufw);
-}
-
-static size_t
-write_IEND(uint8_t *buf)
-{
-	int		length;
-	uint32_t	crc;
-	size_t		bufw;
-	uint8_t		type[4] = "IEND";
-
-	length = 0;
-	crc = htonl(2923585666);
-	bufw = 0;
-	(void)memcpy(buf + bufw, &length, sizeof(length));
-	bufw += sizeof(length);
-	(void)memcpy(buf + bufw, type, sizeof(type));
-	bufw += sizeof(type);
-	(void)memcpy(buf + bufw, &crc, sizeof(crc));
-	bufw += sizeof(crc);
 	return(bufw);
 }
 

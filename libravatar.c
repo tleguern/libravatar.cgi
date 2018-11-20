@@ -181,7 +181,7 @@ page_avatar(struct kreq *r)
 			mime = KMIME_IMAGE_PNG;
 			break;
 		case DEFAULT_MM:
-			if (NULL == (s = fopen(_PATH_MM, "r"))) {
+			if (-1 == mm(avatar->s, &data, &dataz)) {
 				http_start(r, KHTTP_500);
 				return;
 			}
@@ -203,10 +203,8 @@ page_avatar(struct kreq *r)
 			break;
 		}
 	}
-	/*
-	 * pngblank() already returns an image with the requested size
-	 */
-	if (DEFAULT_BLANK != avatar->d) {
+	/* Only resize if an image is found or if the default one is served */
+	if (NULL != s || DEFAULT_NONE == avatar->d) {
 		if (0 == (dataz = pngscale(s, &data, avatar->s))) {
 			fclose(s);
 			http_start(r, KHTTP_500);
