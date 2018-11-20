@@ -160,7 +160,7 @@ write_IEND(uint8_t *buf)
 }
 
 int
-pngblank(size_t width, uint8_t **buf, size_t *bufz)
+blank(size_t width, uint8_t **buf, size_t *bufz)
 {
 	if (NULL == ((*buf) = calloc(PNGBLANK_MAX_SIZE, 1)))
 		return(-1);

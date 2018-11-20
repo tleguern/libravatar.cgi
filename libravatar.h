@@ -32,6 +32,6 @@ struct IHDR {
 } __attribute__((packed));
 
 size_t pngscale(FILE *, unsigned char **, uint32_t);
-int pngblank(size_t, uint8_t **, size_t *);
+int blank(size_t, uint8_t **, size_t *);
 
 #endif /* LIBRAVATAR_H_ */

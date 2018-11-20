@@ -174,7 +174,7 @@ page_avatar(struct kreq *r)
 			http_start(r, KHTTP_404);
 			return;
 		case DEFAULT_BLANK:
-			if (-1 == pngblank(avatar->s, &data, &dataz)) {
+			if (-1 == blank(avatar->s, &data, &dataz)) {
 				http_start(r, KHTTP_500);
 				return;
 			}
