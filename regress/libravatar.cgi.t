@@ -3,26 +3,21 @@
 #
 # Optionnal user-suplied email address.
 #
-_md5() {
-	if command -v md5 > /dev/null; then
-		md5 -qs "$1"
-	else
-		echo -n "$1" | md5sum | cut -d' ' -f1
-	fi
-}
+. ./regress.sh
 if [ -z "$1" ]; then
 	email=tleguern@bouledef.eu
 else
 	email="$1"; shift
 fi
-hash="$(_md5 $email)"
 baseurl=http://localhost/cgi-bin/libravatar
-. ./regress.sh
-
 mmpath="$(pwd)/mm.png"
 
 test_description="Libravatar.cgi API compliance"
 . /usr/local/share/sharness/sharness.sh
+
+md5hash="$(_md5 $email)"
+sha256hash="$(_sha256 $email)"
+adler32hash="$(_adler32 $email)"
 
 command -v pnginfo > /dev/null 2>&1 && test_set_prereq PNGINFO
 command -v curl > /dev/null 2>&1 && test_set_prereq CURL
@@ -56,13 +51,13 @@ test_expect_success "GET on /avatar" '
 # Normal cases
 #
 test_expect_success "GET on $email's avatar" '
-	testhttpcode GET avatar/$hash 200
+	testhttpcode GET avatar/$md5hash 200
 '
 test_expect_success PNGINFO "Size of the fetched avatar should be 80" '
 	testpngwidth libravatar.test.png 80
 '
 test_expect_success "GET on $email's avatar with a size of 200" '
-	testhttpcode GET avatar/$hash?s=200 200
+	testhttpcode GET avatar/$md5hash?s=200 200
 '
 test_expect_success PNGINFO "Size of the fetched avatar should be 200" '
 	testpngwidth libravatar.test.png 200
@@ -73,31 +68,44 @@ test_expect_failure NOBODY "GET on a non existing user's avatar" '
 	test_cmp libravatar.test.png libravatar.nobody.png
 '
 #
-# Invalid size= or default=
+# Invalid hash, size= or default=
 #
+# Returns nobody.png
+test_expect_failure "GET on a small hash (adler32)" '
+	testhttpcode GET avatar/$adler32hash 400
+'
 test_expect_success "GET on $email's avatar with an empty size" '
-	testhttpcode GET avatar/$hash?s= 400
+	testhttpcode GET avatar/$md5hash?s= 400
 '
 test_expect_success "GET on $email's avatar with an invalid size" '
-	testhttpcode GET avatar/$hash?s=mille 400
+	testhttpcode GET avatar/$md5hash?s=mille 400
 '
 test_expect_success "GET on $email's avatar with size 0" '
-	testhttpcode GET avatar/$hash?s=0 400
+	testhttpcode GET avatar/$md5hash?s=0 400
 '
 test_expect_success "GET avatar for $email with size 1000" '
-	testhttpcode GET avatar/$hash?s=1000 400
+	testhttpcode GET avatar/$md5hash?s=1000 400
+'
+test_expect_success "GET avatar for $email with negative size" '
+	testhttpcode GET avatar/$md5hash?s=-10 400
 '
 test_expect_success "GET on $email's avatar with an empty default" '
-	testhttpcode GET avatar/$hash?d= 400
+	testhttpcode GET avatar/$md5hash?d= 400
+'
+test_expect_success "GET on $email's avatar with a wrong default" '
+	testhttpcode GET avatar/$md5hash?d=unicorn 400
+'
+test_expect_success "GET on $email's avatar with a forced wrong default" '
+	testhttpcode GET "avatar/$md5hash?d=unicorn&f=y" 400
 '
 #
 # default=404
 #
 test_expect_success "GET on $email's avatar with default=404" '
-	testhttpcode GET avatar/$hash?d=404 200
+	testhttpcode GET avatar/$md5hash?d=404 200
 '
 test_expect_success "GET on $email's avatar with default=404 and forcedefault=y" '
-	testhttpcode GET "avatar/$hash?d=404&f=y" 404
+	testhttpcode GET "avatar/$md5hash?d=404&f=y" 404
 '
 test_expect_success "GET on a non existing user's avatar with default=404" '
 	testhttpcode GET "avatar/$(_md5 invalid$RANDOM)?d=404" 404

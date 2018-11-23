@@ -2,6 +2,38 @@
 # Tristan Le Guern <tleguern@bouledef.eu>
 # Public domain
 
+_md5() {
+	if command -v md5 > /dev/null; then
+		md5 -qs "$1"
+	else
+		echo -n "$1" | md5sum | cut -d' ' -f1
+	fi
+}
+
+_sha256() {
+	if command -v sha256 > /dev/null; then
+		sha256 -qs "$1"
+	else
+		echo -n "$1" | sha256sum | cut -d' ' -f1
+	fi
+}
+
+_adler32() {
+	local _value="$*"
+
+	local _s1=1
+	local _s2=0
+	local _i=0
+	for _i in $(printf "$_value" | sed 's/./& /g'); do
+		local _b=0
+
+		_b=$(printf "%d" "'$_i")
+		_s1=$(( (_s1 + _b) % 65521 ))
+		_s2=$(( (_s2 + _s1) % 65521 ))
+	done
+	printf "%08x\n" $(( (_s2 << 16) + _s1))
+}
+
 testhttpcode() {
 	local verb="$1"; shift
 	local path="$1"; shift
