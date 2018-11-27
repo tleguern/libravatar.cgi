@@ -44,7 +44,7 @@ testhttpcode() {
 
 	curl -sS -X "$verb" -i "$baseurl/$path" 2>/dev/null\
 	    | grep -a -v -e Date: -e Server: > "$tmp"
-	code=$(grep -a 'HTTP/1.1' "$tmp" | tail -n 1 | cut -d' ' -f 2)
+	code=$(grep -a HTTP "$tmp" | head -n 1 | cut -d' ' -f 2)
 	if [ "$code" != "$desiredcode" ]; then
 		error=1
 	fi

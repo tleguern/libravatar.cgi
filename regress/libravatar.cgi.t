@@ -39,7 +39,7 @@ test_expect_success "POST on /" '
 	testhttpcode POST / 405
 '
 test_expect_success "GET on index" '
-	testhttpcode GET index 200
+	testhttpcode GET /index 200
 '
 test_expect_success "GET on invalid path" '
 	testhttpcode GET invalidpath 404
