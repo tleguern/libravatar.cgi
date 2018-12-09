@@ -57,4 +57,4 @@ Basic regression tests are provided in the `regress/` folder. They test this imp
 
 ## License
 
-All sources use the ISC license excepts `resample.{c,h}`, `jpegscale.c` and `pngscale.c` which use the MIT license. This files are sourced from the [liboil](https://github.com/ender672/liboil) project.
+All sources use the ISC license excepts `resample.{c,h}`, `jpegscale.c` and `pngscale.c` which use the MIT license. These files are sourced from the [liboil](https://github.com/ender672/liboil) project.
