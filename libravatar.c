@@ -242,7 +242,7 @@ sanitize(struct kreq *r)
 		    || strcmp(r->fields[i].key, "size") == 0) {
 			avatar->s = strtonum(r->fields[i].val, 1, 512, &err);
 			if (err != NULL)
-				return(KHTTP_400);
+				avatar->s = 80;
 		} else if (strcmp(r->fields[i].key, "d") == 0
 		    || strcmp(r->fields[i].key, "default") == 0) {
 			if (strcmp(r->fields[i].val, "404") == 0) {
@@ -258,8 +258,6 @@ sanitize(struct kreq *r)
 				if (NULL ==
 				    (avatar->url = urldecode(r->fields[i].val)))
 					avatar->d = DEFAULT__MAX;
-			} else {
-				return(KHTTP_400);
 			}
 		} else if (strcmp(r->fields[i].key, "f") == 0
 		    || strcmp(r->fields[i].key, "forcedefault") == 0) {
