@@ -3,7 +3,7 @@
 To use these tests the following programs are needed:
 
 * curl ;
-* sharness.
+* sharness (from git master branch).
 
 Some tests require an aditionnal utility named [pnginfo](https://github.com/Aversiste/pnginfo) but as it is currently undocumented as well as untested on Linux the dependency is not mandatory.
 
