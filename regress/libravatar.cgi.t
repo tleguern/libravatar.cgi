@@ -28,6 +28,7 @@ command -v curl > /dev/null 2>&1 && test_set_prereq CURL
 cp "$mmpath" libravatar.mm.png && test_set_prereq MM
 curl -sL "http://localhost/avatars/default.png" > libravatar.nobody.png \
     &&  test_set_prereq NOBODY
+test_set_prereq FORCEDEFAULT
 
 if ! test_have_prereq CURL; then
 	skip_all="skipping all tests as curl is not installed"

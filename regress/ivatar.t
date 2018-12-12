@@ -28,6 +28,7 @@ curl -sL "$baseurl/static/img/mm/80.png" > libravatar.mm.png \
     && test_set_prereq MM
 curl -sL "$baseurl/static/img/nobody/80.png" > libravatar.nobody.png \
     &&  test_set_prereq NOBODY
+test_set_prereq FORCEDEFAULT
 
 if ! test_have_prereq CURL; then
 	skip_all="skipping all tests as curl is not installed"
