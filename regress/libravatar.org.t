@@ -1,9 +1,11 @@
 #!/bin/sh
 
+WORKD=$(cd $(dirname $0) && pwd)
+
 #
 # Optionnal user-suplied email address.
 #
-. ./regress.sh
+. ./lib/regress.sh
 if [ -z "$1" ]; then
 	email=tleguern@bouledef.eu
 else

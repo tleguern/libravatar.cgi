@@ -47,6 +47,7 @@ testhttpcode() {
 	code=$(grep -a HTTP "$tmp" | head -n 1 | cut -d' ' -f 2)
 	if [ "$code" != "$desiredcode" ]; then
 		error=1
+		cp "$tmp" "libravatar.$SHARNESS_TEST_NB.png"
 	fi
 	return $error
 }
@@ -64,6 +65,7 @@ testhttpcodewithredirect() {
 	code=$(grep -a HTTP "$tmp" | tail -n 1 | cut -d' ' -f 2)
 	if [ "$code" != "$desiredcode" ]; then
 		error=1
+		cp "$tmp" "libravatar.$SHARNESS_TEST_NB.png"
 	fi
 	return $error
 }
