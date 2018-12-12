@@ -303,7 +303,11 @@ main(void)
 		return 0;
 
 	if (KMETHOD_OPTIONS == r.method) {
-		khttp_head(&r, kresps[KRESP_ALLOW], "OPTIONS GET");
+		if (PAGE_AVATAR == r.page) {
+			khttp_head(&r, kresps[KRESP_ALLOW], "404 blank mm mp");
+		} else {
+			khttp_head(&r, kresps[KRESP_ALLOW], "OPTIONS GET");
+		}
 		http_start(&r, KHTTP_200);
 	} else if (KMETHOD_GET != r.method) {
 		http_start(&r, KHTTP_405);
