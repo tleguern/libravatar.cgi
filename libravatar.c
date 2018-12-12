@@ -74,29 +74,31 @@ urldecode(const char *cp)
 	if (NULL == cp)
 		return(NULL);
 
-	sz = strlen(cp);
+	sz = strlen(cp) + 1;
 	nm = 0;
 	for (cur = 0; '\0' != (ch = cp[cur]); cur++)
 		if ('%' == ch)
 			nm += 1;
 	sz = sz - nm * 2;
-
-	if (NULL == (p = malloc(sz)))
+	if (NULL == (p = calloc(sz, 1)))
 		return(NULL);
+
 	for (cur = 0; '\0' != (ch = *cp); cp++, cur++) {
 		if ('%' == ch) {
-			char buf[3];
+			char e, buf[3];
 			buf[0] = *(cp + 1);
 			buf[1] = *(cp + 2);
 			buf[2] = '\0';
-			(void)snprintf(p + cur, 2, "%c",
-			    (int)strtol(buf, NULL, 16));
-			cp += 2;
+			/* treat invalid triplets as regular text */
+			if (1 == sscanf(buf, "%hhx", &e)) {
+				(void)snprintf(p + cur, 2, "%c", e);
+				cp += 2;
+				continue;
+			}
 		} else if ('+' == ch) {
-			p[cur] = ' ';
-		} else {
-			p[cur] = ch;
+			ch = ' ';
 		}
+		p[cur] = ch;
 	}
 	return(p);
 }
