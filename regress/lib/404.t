@@ -8,5 +8,5 @@ test_expect_success FORCEDEFAULT "[404] GET on $email's avatar with default=404 
 	testhttpcode GET "avatar/$md5hash?d=404&f=y" 404
 '
 test_expect_success "[404] GET on a non existing user's avatar with default=404" '
-	testhttpcode GET "avatar/$(_sha256 invalid$RANDOM)?d=404" 404
+	testhttpcodewithredirect GET "avatar/$(_sha256 invalid$RANDOM)?d=404" 404
 '

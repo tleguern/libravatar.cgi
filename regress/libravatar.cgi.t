@@ -119,8 +119,8 @@ test_expect_success "GET on $email's avatar with size 0" '
 test_expect_success "GET avatar for $email with size 1000" '
 	testhttpcode GET avatar/$md5hash?s=1000 200
 '
-test_expect_success PNGINFO "Size of the fetched avatar should be 80" '
-	testpngwidth libravatar.test.png 80
+test_expect_success PNGINFO "Size of the fetched avatar should be 512" '
+	testpngwidth libravatar.test.png 512
 '
 test_expect_success "GET avatar for $email with negative size" '
 	testhttpcode GET avatar/$md5hash?s=-10 200
