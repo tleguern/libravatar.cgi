@@ -218,7 +218,7 @@ page_avatar(struct kreq *r)
 	khttp_head(r, kresps[KRESP_CONTENT_TYPE],
 	    "%s", kmimetypes[mime]);
 	khttp_head(r, kresps[KRESP_ACCESS_CONTROL_ALLOW_ORIGIN], "*");
-	khttp_head(r, kresps[KRESP_CACHE_CONTROL], "max-age=300");
+	khttp_head(r, kresps[KRESP_CACHE_CONTROL], "max-age=86400");
 	khttp_body(r);
 	khttp_write(r, data, dataz);
 	free(data);
