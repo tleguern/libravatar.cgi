@@ -17,7 +17,7 @@ This implementation only serves existing avatars in the PNG format located in `/
 
 To request an avatar the following steps should be done :
 
-* Create a hash of a lowercased email address using md5 or sha1 ;
+* Create a hash of a lowercased email address using md5 or sha256 ;
 * Call the CGI with a HTTP request on the path `/avatar/$hash`.
 
 A few options are accepted as GET parameters :
