@@ -1,0 +1,11 @@
+image: freebsd/latest
+packages:
+- png
+- kcgi
+sources:
+- https://github/Aversiste/libravatar.cgi
+tasks:
+- build:
+        cd libravatar.cgi
+        ./configure
+        make
