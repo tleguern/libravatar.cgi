@@ -1,5 +1,7 @@
+include Makefile.configure
+
 PROG= libravatar
-SRCS= libravatar.c oil_resample.c oil_libpng.c pngscale.c lgpng.c blank.c mm.c
+SRCS= libravatar.c oil_resample.c oil_libpng.c pngscale.c lgpng.c blank.c mm.c compats.c
 OBJS= ${SRCS:.c=.o}
 
 LDFLAGS+= -L /usr/local/lib
