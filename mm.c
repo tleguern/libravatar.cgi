@@ -28,8 +28,6 @@
 #include "libravatar.h"
 #include "lgpng.h"
 
-const char *malloc_options = "GCFJR<<";
-
 #define PNGMM_MAX_SIZE 1500
 
 static int
