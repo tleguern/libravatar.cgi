@@ -45,16 +45,15 @@ Configure your http server of choice to receive this CGI. An example and minimal
 # mkdir /var/www/htdocs/avatars/
 # cp config/mm.png /var/www/htdocs/avatars/
 # cp config/default.png /var/www/htdocs/avatars/
+$ ./configure
 $ make
 # make install
 ```
 
-Although the code is not portable yet the Makefile is and should work with GNU make.
-
 ## Tests
 
-Basic regression tests are provided in the `regress/` folder. They test this implementation and two others: the official Libravatar and ivatar.
+Regression tests are provided in the `regress/` folder. They test this implementation and two others: the old Libravatar from Francois Marier and ivatar from Oliver Falk.
 
 ## License
 
-All sources use the ISC license excepts `resample.{c,h}`, `jpegscale.c` and `pngscale.c` which use the MIT license. These files are sourced from the [liboil](https://github.com/ender672/liboil) project.
+All sources use the ISC license excepts `oil_libpng.{c,h}`, and `oil_resample.{c,h}` which use the MIT license. These files are sourced from the [liboil](https://github.com/ender672/liboil) project.
