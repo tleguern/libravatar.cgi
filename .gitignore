@@ -1,3 +1,8 @@
 .*
 libravatar
 *.o
+Makefile.configure
+config.h
+config.h.old
+config.log
+config.log.old
