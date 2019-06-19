@@ -9,8 +9,8 @@ LDADD+= -lkcgihtml -lkcgi -lpng -lz -lm
 CFLAGS+= -I /usr/local/include
 CFLAGS+= -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes -Wwrite-strings
 
-INSTALL_PROGRAM?= install -m 0555
-DESTDIR?=/var/www/cgi-bin
+HTDOCSPREFIX= /var/www/htdocs
+CGIPREFIX= /var/www/cgi-bin
 
 .SUFFIXES: .c .o
 .PHONY: clean install
@@ -26,5 +26,8 @@ ${PROG}: ${OBJS}
 clean:
 	rm -f ${PROG} ${OBJS}
 
-install: ${PROG}
-	${INSTALL_PROGRAM} ${PROG} ${DESTDIR}	
+install: all
+	mkdir -p ${DESTDIR}${CGIPREFIX}
+	mkdir -p ${DESTDIR}${HTDOCSPREFIX}/avatars
+	${INSTALL_DATA} config/default.png ${DESTDIR}${HTDOCSPREFIX}/avatars/
+	${INSTALL_PROGRAM} ${PROG} ${DESTDIR}${CGIPREFIX}/libravatar.cgi
