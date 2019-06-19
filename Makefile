@@ -15,6 +15,8 @@ DESTDIR?=/var/www/cgi-bin
 .SUFFIXES: .c .o
 .PHONY: clean install
 
+all:	${PROG}
+
 .c.o:
 	${CC} ${CFLAGS} -c $<
 
