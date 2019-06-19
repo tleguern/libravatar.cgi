@@ -43,7 +43,6 @@ Configure your http server of choice to receive this CGI. An example and minimal
 
 ```
 # mkdir /var/www/htdocs/avatars/
-# cp config/mm.png /var/www/htdocs/avatars/
 # cp config/default.png /var/www/htdocs/avatars/
 $ ./configure
 $ make
