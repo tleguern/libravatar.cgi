@@ -108,8 +108,14 @@ int oil_scale_init(struct oil_scale *os, int in_height, int out_height,
 	int in_width, int out_width, enum oil_colorspace cs);
 
 /**
+ * Reset rows countersin an oil scaler struct.
+ * @os: Pointer to the scaler struct to be reseted.
+ */
+void oil_scale_restart(struct oil_scale *);
+
+/**
  * Free heap allocations associated with a yscaler struct.
- * @ys: Pointer to the yscaler struct to be freed.
+ * @os: Pointer to the yscaler struct to be freed.
  */
 void oil_scale_free(struct oil_scale *os);
 
@@ -133,10 +139,10 @@ void oil_scale_in(struct oil_scale *os, unsigned char *in);
 /**
  * Scale previously ingested & buffered contents to produce the next scaled output
  * scanline.
- * @ys: Pointer to the scaler struct.
+ * @os: Pointer to the scaler struct.
  * @out: Pointer to the buffer where the output scanline will be written.
  */
-void oil_scale_out(struct oil_scale *ys, unsigned char *out);
+void oil_scale_out(struct oil_scale *os, unsigned char *out);
 
 /**
  * Calculate an output ratio that preserves the input aspect ratio.
