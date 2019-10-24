@@ -11,7 +11,7 @@ if [ -z "$1" ]; then
 else
 	email="$1"; shift
 fi
-baseurl=http://localhost/cgi-bin/libravatar
+baseurl=http://localhost/cgi-bin/libravatar.cgi
 mmpath="$(pwd)/mm.png"
 
 defaults=$(echo $(curl -si -X OPTIONS "$baseurl"/avatar | grep Allow | cut -d':' -f2 | tr -d '\r'))
