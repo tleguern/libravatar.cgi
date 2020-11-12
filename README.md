@@ -37,6 +37,12 @@ The current version is not portable and only runs on OpenBSD.
 * [kcgi](https://kristaps.bsd.lv/kcgi) ;
 * libpng.
 
+#### For testing
+
+* curl ;
+* sharness ;
+* [pnginfo](https://github.com/Aversiste/pnginfo) (optional).
+
 ### Build
 
 Configure your http server of choice to receive this CGI. An example and minimalistic configuration file is provided in the `config/` folder for OpenBSD httpd(8).
