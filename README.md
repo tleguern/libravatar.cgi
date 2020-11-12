@@ -27,7 +27,7 @@ A few options are accepted as GET parameters :
 * `rating`: only kept for compatibility with Gravatar this option does nothing ;
 * `forcedefault`: `y` or `n`.
 
-The current version is not portable and only runs on OpenBSD.
+The current version is only tested on OpenBSD but builds without errors on FreeBSD and Alpine.
 
 ## Install
 
