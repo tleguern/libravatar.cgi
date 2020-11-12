@@ -3,7 +3,7 @@ packages:
   - png
   - kcgi
 sources:
-  - https://github/Aversiste/libravatar.cgi
+  - https://git.sr.ht/~tleguern/libravatar.cgi
 tasks:
   - build: |
       cd libravatar.cgi
