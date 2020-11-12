@@ -53,6 +53,10 @@ $ make
 
 Regression tests are provided in the `regress/` folder. They test this implementation and two others: the old Libravatar from Francois Marier and ivatar from Oliver Falk.
 
+## Contributing
+
+Either send [send GitHub pull requests](https://github.com/Aversiste/libravatar.cgi) or [send patches on SourceHut](https://lists.sr.ht/~tleguern/libravatar-dev).
+
 ## License
 
 All sources use the ISC license excepts `oil_libpng.{c,h}`, and `oil_resample.{c,h}` which use the MIT license. These files are sourced from the [liboil](https://github.com/ender672/liboil) project.
