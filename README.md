@@ -22,22 +22,22 @@ To request an avatar the following steps should be done :
 
 A few options are accepted as GET parameters :
 
-* size: control the size of the image, must be between 1 and 512 with a default value of 80 ;
-* default: `404`, `mm` and `blank` are supported ;
-* rating: only kept for compatibility with Gravatar this option does nothing ;
-* forcedefault: `y` or `n`.
+* `size`: control the size of the image, must be between 1 and 512 with a default value of 80 ;
+* `default`: `404`, `mm` and `blank` are supported ;
+* `rating`: only kept for compatibility with Gravatar this option does nothing ;
+* `forcedefault`: `y` or `n`.
 
 The current version is not portable and only runs on OpenBSD.
 
 ## Install
 
-#### Requires
+### Requires
 
 * C compiler ;
 * [kcgi](https://kristaps.bsd.lv/kcgi) ;
-* libpng
+* libpng.
 
-#### Build
+### Build
 
 Configure your http server of choice to receive this CGI. An example and minimalistic configuration file is provided in the `config/` folder for OpenBSD httpd(8).
 
