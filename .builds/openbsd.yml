@@ -9,3 +9,7 @@ tasks:
       cd libravatar.cgi
       ./configure
       make
+triggers:
+  - action: email
+    condition: failure
+    to: "<tleguern+libravatar@bouledef.eu>"
