@@ -7,7 +7,8 @@ Small Libravatar implementation in C.
 1. [Synopsis](#synopsis)
 2. [Install](#install)
 3. [Tests](#tests)
-4. [License](#license)
+4. [Contributing](#contributing)
+5. [License](#license)
 
 ## Synopsis
 
