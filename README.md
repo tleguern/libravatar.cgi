@@ -2,6 +2,8 @@
 
 Small Libravatar implementation in C.
 
+Warning: This software is not compatible with rust zealots.
+
 ## Contents
 
 1. [Synopsis](#synopsis)
