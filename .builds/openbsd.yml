@@ -16,6 +16,9 @@ tasks:
   - httpd: |
       cd libravatar.cgi
       doas cp config/httpd.conf /etc/httpd.conf
+      doas cp config/default.png /var/www/htdocs/avatars/
+      doas cp regress/test_avatar.png /var/www/htdocs/avatars/b4becdf161eb9e311664b548cc735a9d.png
+      doas cp regress/test_avatar.png /var/www/htdocs/avatars/ff0d280b9c5f5a2c55588f66a1d676ac82c5be8f14f90afec5c0b525467d059a.png
       doas rcctl -f start httpd slowcgi
   - tests: |
       cd libravatar.cgi/regress
