@@ -1,14 +1,25 @@
+---
 image: openbsd/latest
 packages:
   - png
   - kcgi
-sources:
-  - https://git.sr.ht/~tleguern/libravatar.cgi
+  - curl
+  - sharness
 tasks:
   - build: |
       cd libravatar.cgi
       ./configure
       make
+  - install: |
+      cd libravatar.cgi
+      doas make install
+  - httpd: |
+      cd libravatar.cgi
+      doas cp config/httpd.conf /etc/httpd.conf
+      doas rcctl -f start httpd slowcgi
+  - tests: |
+      cd libravatar.cgi/regress
+      ./libravatar.cgi.t
 triggers:
   - action: email
     condition: failure
