@@ -5,7 +5,16 @@ packages:
   - kcgi
   - curl
   - sharness
+sources:
+  - https://git.sr.ht/~tleguern/pnginfo
+environment:
+  PATH: "/home/build/bin:/bin:/sbin:/usr/bin/:/usr/sbin:/usr/local/bin"
 tasks:
+  - pnginfo: |
+      cd pnginfo
+      ./configure PREFIX=$HOME
+      make
+      make install
   - build: |
       cd libravatar.cgi
       ./configure
